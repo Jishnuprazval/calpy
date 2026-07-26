@@ -60,7 +60,7 @@ python app.py
 
 <img width="444" height="796" alt="cal2" src="https://github.com/user-attachments/assets/67192ab1-e05f-4c43-91a9-59a1fa5c8b4b" />
 <img width="441" height="793" alt="image" src="https://github.com/user-attachments/assets/552911f5-a694-49bb-b21f-d213c202fb5a" />
-<img width="444" height="796" alt="image" src="https://github.com/user-attachments/assets/c87f523d-57f4-43d5-9114-af04fdbd2ab4" />
+<img width="425" height="780" alt="cal" src="https://github.com/user-attachments/assets/6351c03a-f013-41cd-ac4f-1447e2c38b05" />
 
 ## 🔮 Future Improvements
 
