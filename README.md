@@ -58,9 +58,10 @@ python app.py
 
 Then open the local address displayed in the terminal in your web browser.
 
-## 📸 Screenshots
-
-Screenshots of the application will be added here.
+## 📸 Application Screenshots
+<img width="444" height="796" alt="cal2" src="https://github.com/user-attachments/assets/67192ab1-e05f-4c43-91a9-59a1fa5c8b4b" />
+<img width="441" height="793" alt="image" src="https://github.com/user-attachments/assets/552911f5-a694-49bb-b21f-d213c202fb5a" />
+<img width="444" height="796" alt="image" src="https://github.com/user-attachments/assets/c87f523d-57f4-43d5-9114-af04fdbd2ab4" />
 
 ## 🔮 Future Improvements
 
