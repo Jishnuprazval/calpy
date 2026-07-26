@@ -19,20 +19,24 @@ Try CalPy online:https://calpy-8un8.onrender.com
 
 ## 🛠️ Technologies Used
 
-- Python
-- Flask
-- HTML
-- CSS
-
+- **Python** — Backend logic
+- **Flask** — Web framework
+- **HTML** — Application structure
+- **CSS** — User interface styling
+- **JavaScript** — Calculator interactions
+- **Gunicorn** — Production WSGI server
+- **Render** — Application deployment
 ## 📁 Project Structure
 
 ```text
 calpy/
-├── app.py
-├── requirements.txt
+├── templates/
+│   └── index.html
 ├── .gitignore
-└── templates/
-    └── index.html
+├── LICENSE
+├── README.md
+├── app.py
+└── requirements.txt
 ```
 
 
@@ -75,6 +79,12 @@ python app.py
 - Dark/light mode
 - Improved responsive design
 - Keyboard shortcuts
+
+
+## 📄 License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
+
 
 ## 👨‍💻 Author
 
