@@ -2,6 +2,11 @@
 
 CalPy is a simple web-based calculator application built using **Python and Flask**. It provides an easy-to-use interface for performing basic mathematical calculations through a web browser.
 
+## 🌐 Live Demo
+
+Try CalPy online:https://calpy-8un8.onrender.com
+
+
 ## 🚀 Features
 
 - Addition
@@ -29,9 +34,6 @@ calpy/
 └── templates/
     └── index.html
 ```
-## 🌐 Live Demo
-
-Try CalPy online:https://calpy-8un8.onrender.com
 
 
 ## ⚙️ Installation
