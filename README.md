@@ -29,6 +29,10 @@ calpy/
 └── templates/
     └── index.html
 ```
+## 🌐 Live Demo
+
+Try CalPy online:https://calpy-8un8.onrender.com
+
 
 ## ⚙️ Installation
 
