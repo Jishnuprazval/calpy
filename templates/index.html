@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python Calculator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1a1a2e;
+      font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    }
+
+    .calculator {
+      background: #16213e;
+      border-radius: 20px;
+      padding: 24px;
+      width: 340px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+      border: 1px solid #0f3460;
+    }
+
+    /* ── Display ── */
+    .display {
+      background: #0f3460;
+      border-radius: 12px;
+      padding: 18px 20px 14px;
+      margin-bottom: 20px;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: stretch;
+      overflow: hidden;
+    }
+
+    .display .expression {
+      font-size: 13px;
+      color: #8899bb;
+      min-height: 20px;
+      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Editable input replaces the static result div */
+    .display .expr-input {
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 36px;
+      font-weight: 300;
+      color: #e2e8f0;
+      text-align: right;
+      width: 100%;
+      caret-color: #e94560;
+      font-family: inherit;
+      padding: 0;
+      margin-top: 4px;
+      /* allow horizontal scroll so cursor stays visible */
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .display .expr-input.error {
+      font-size: 18px;
+      color: #fc8181;
+    }
+
+    .display .expr-input::selection {
+      background: rgba(233, 69, 96, 0.35);
+    }
+
+    /* ── Buttons ── */
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      height: 62px;
+      font-size: 18px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.08s, filter 0.08s;
+      outline: none;
+      user-select: none;
+    }
+
+    button:active {
+      transform: scale(0.94);
+    }
+
+    /* number buttons */
+    .btn-num {
+      background: #1e3a5f;
+      color: #e2e8f0;
+    }
+    .btn-num:hover { filter: brightness(1.25); }
+
+    /* operator buttons */
+    .btn-op {
+      background: #0f3460;
+      color: #63b3ed;
+    }
+    .btn-op:hover { filter: brightness(1.3); }
+
+    /* equals */
+    .btn-eq {
+      background: #e94560;
+      color: #fff;
+      font-size: 22px;
+    }
+    .btn-eq:hover { filter: brightness(1.15); }
+
+    /* clear / special */
+    .btn-clear {
+      background: #2d3748;
+      color: #fc8181;
+    }
+    .btn-clear:hover { filter: brightness(1.25); }
+
+    /* span 2 cols */
+    .span2 { grid-column: span 2; }
+
+    /* footer */
+    .footer {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 11px;
+      color: #4a5568;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <div class="display">
+      <div class="expression" id="expression"></div>
+      <input
+        class="expr-input"
+        id="expr-input"
+        type="text"
+        autocomplete="off"
+        autocorrect="off"
+        spellcheck="false"
+        value="0"
+      />
+    </div>
+
+    <div class="buttons">
+      <!-- Row 1 -->
+      <button class="btn-clear" data-action="clear">AC</button>
+      <button class="btn-clear" data-action="sign">+/−</button>
+      <button class="btn-clear" data-action="percent">%</button>
+      <button class="btn-op"    data-value="÷">÷</button>
+
+      <!-- Row 2 -->
+      <button class="btn-num" data-value="7">7</button>
+      <button class="btn-num" data-value="8">8</button>
+      <button class="btn-num" data-value="9">9</button>
+      <button class="btn-op"  data-value="×">×</button>
+
+      <!-- Row 3 -->
+      <button class="btn-num" data-value="4">4</button>
+      <button class="btn-num" data-value="5">5</button>
+      <button class="btn-num" data-value="6">6</button>
+      <button class="btn-op"  data-value="-">−</button>
+
+      <!-- Row 4 -->
+      <button class="btn-num" data-value="1">1</button>
+      <button class="btn-num" data-value="2">2</button>
+      <button class="btn-num" data-value="3">3</button>
+      <button class="btn-op"  data-value="+">+</button>
+
+      <!-- Row 5 -->
+      <button class="btn-num span2" data-value="0">0</button>
+      <button class="btn-num" data-value=".">.</button>
+      <button class="btn-eq"  data-action="equals">=</button>
+
+      <!-- Row 6 — extra operations -->
+      <button class="btn-op" data-value="(">(</button>
+      <button class="btn-op" data-value=")">)</button>
+      <button class="btn-op" data-action="backspace">⌫</button>
+      <button class="btn-op" data-value="^">xʸ</button>
+    </div>
+
+    <div class="footer">Python Flask Calculator · localhost:5000</div>
+  </div>
+
+  <script>
+    const expressionEl = document.getElementById("expression");
+    const input        = document.getElementById("expr-input");
+
+    // Always keep focus on the input so cursor works
+    input.focus();
+    document.addEventListener("click", e => {
+      if (!e.target.closest("button")) input.focus();
+    });
+
+    let justEvaled = false;
+
+    // ── helpers ──────────────────────────────────────────────────────────────
+
+    function insertAtCursor(text) {
+      const start = input.selectionStart;
+      const end   = input.selectionEnd;
+      // If the entire field is just "0" and we're not typing ".", wipe it first
+      const isZero = input.value === "0";
+      const base   = isZero && text !== "." ? "" : input.value;
+      const insertAt = isZero && text !== "." ? 0 : start;
+      input.value = base.slice(0, insertAt) + text + base.slice(isZero ? base.length : end);
+      const pos = insertAt + text.length;
+      input.setSelectionRange(pos, pos);
+      syncSize();
+    }
+
+    function deleteAtCursor() {
+      const start = input.selectionStart;
+      const end   = input.selectionEnd;
+      if (start !== end) {
+        // delete selection
+        input.value = input.value.slice(0, start) + input.value.slice(end);
+        input.setSelectionRange(start, start);
+      } else if (start > 0) {
+        input.value = input.value.slice(0, start - 1) + input.value.slice(start);
+        input.setSelectionRange(start - 1, start - 1);
+      }
+      if (!input.value) input.value = "0";
+      syncSize();
+    }
+
+    function syncSize() {
+      const len = input.value.length;
+      input.style.fontSize = len > 16 ? "22px" : len > 12 ? "28px" : "36px";
+    }
+
+    function setInput(val) {
+      input.value = val;
+      input.setSelectionRange(val.length, val.length);
+      syncSize();
+    }
+
+    function showError(msg, expr) {
+      expressionEl.textContent = expr + " =";
+      input.value = msg;
+      input.classList.add("error");
+      hasError = true;
+      syncSize();
+    }
+
+    let hasError = false;
+
+    function clearError() {
+      if (hasError) {
+        hasError = false;
+        expressionEl.textContent = "";
+        setInput("0");
+      }
+      input.classList.remove("error");
+    }
+
+    // ── evaluate ─────────────────────────────────────────────────────────────
+
+    async function evaluate(expr) {
+      const res = await fetch("/calculate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ expression: expr })
+      });
+      return res.json();
+    }
+
+    // ── button handler ────────────────────────────────────────────────────────
+
+    async function handleButton(btn) {
+      input.focus();
+      const val    = btn.dataset.value;
+      const action = btn.dataset.action;
+
+      if (action === "clear") {
+        justEvaled = false;
+        clearError();
+        expressionEl.textContent = "";
+        setInput("0");
+        return;
+      }
+
+      if (action === "backspace") {
+        clearError();
+        if (justEvaled) {
+          justEvaled = false;
+          expressionEl.textContent = "";
+          setInput("0");
+          return;
+        }
+        deleteAtCursor();
+        return;
+      }
+
+      if (action === "sign") {
+        clearError();
+        const v = input.value;
+        if (!v || v === "0") return;
+        setInput(v.startsWith("-") ? v.slice(1) : "-" + v);
+        return;
+      }
+
+      if (action === "percent") {
+        clearError();
+        const v = input.value;
+        if (!v || v === "0") return;
+        const data = await evaluate(`(${v})/100`);
+        if (data.result !== null) setInput(data.result);
+        return;
+      }
+
+      if (action === "equals") {
+        const expr = input.value;
+        if (!expr || expr === "0") return;
+        clearError();
+        const data = await evaluate(expr);
+        if (data.error) {
+          showError(data.error, expr);
+          justEvaled = false;
+        } else {
+          expressionEl.textContent = expr + " =";
+          setInput(data.result);
+          justEvaled = true;
+        }
+        return;
+      }
+
+      // ── inserting a character ─────────────────────────────────────────────
+      clearError();
+      insertMaybeAfterEval(val);
+    }
+
+    // ── button click events ───────────────────────────────────────────────────
+    document.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("mousedown", e => e.preventDefault()); // don't steal focus
+      btn.addEventListener("click", () => handleButton(btn));
+    });
+
+    // ── keyboard input ────────────────────────────────────────────────────────
+    input.addEventListener("keydown", e => {
+      clearError();
+
+      // Let browser move cursor freely
+      if (["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","End"].includes(e.key)) return;
+      // Allow Ctrl/Cmd shortcuts (copy, paste, select-all, etc.)
+      if (e.ctrlKey || e.metaKey) return;
+
+      if (e.key === "Enter" || e.key === "=") {
+        e.preventDefault();
+        document.querySelector("[data-action='equals']").click();
+        return;
+      }
+      if (e.key === "Escape") {
+        e.preventDefault();
+        document.querySelector("[data-action='clear']").click();
+        return;
+      }
+      if (e.key === "Backspace") {
+        e.preventDefault();
+        if (justEvaled) {
+          justEvaled = false;
+          expressionEl.textContent = "";
+          setInput("0");
+        } else {
+          deleteAtCursor();
+        }
+        return;
+      }
+
+      // Map * → × and / → ÷ for backend consistency
+      if (e.key === "*") { e.preventDefault(); insertMaybeAfterEval("×"); return; }
+      if (e.key === "/") { e.preventDefault(); insertMaybeAfterEval("÷"); return; }
+
+      // Route all valid printable chars through insertAtCursor
+      const allowed = /^[0-9+\-().^]$/;
+      if (e.key.length === 1) {
+        e.preventDefault();
+        if (allowed.test(e.key)) insertMaybeAfterEval(e.key);
+        // else: silently block letters and other invalid chars
+      }
+    });
+
+    // Shared logic: handle justEvaled state then insert
+    const operators = ["+", "-", "×", "÷", "^"];
+    function insertMaybeAfterEval(ch) {
+      if (justEvaled) {
+        justEvaled = false;
+        expressionEl.textContent = "";
+        if (!operators.includes(ch)) {
+          setInput(ch);
+          return;
+        }
+        // operator after eval — keep result, append to end
+        input.setSelectionRange(input.value.length, input.value.length);
+      }
+      insertAtCursor(ch);
+    }
+  </script>
+</body>
+</html>
